@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var selectedArticle: Article?
     var body: some View {
         NavigationStack{
             List{
@@ -15,15 +16,21 @@ struct ContentView: View {
                     
                      ZStack{
                         ArticleRow(article: article)
-                        NavigationLink(destination: ArticleDetailView(article:article) ){
-                            EmptyView()
-                            //ArticleRow(article: article)
-                        }.opacity(0)
-                    }
+//                        NavigationLink(destination: ArticleDetailView(article:article) ){
+//                            EmptyView()
+//                            //ArticleRow(article: article)
+//                        }.opacity(0)
+                     }.onTapGesture {
+                         self.selectedArticle = article
+                     }
     
                     }.listRowSeparator(.hidden)
                 }
                 .listStyle(.plain)
+                .sheet(item: $selectedArticle) { article in
+                        ArticleDetailView(article: article)
+                    
+                }
                 .navigationTitle("Your reading")
                 
             }
@@ -114,19 +121,25 @@ struct ContentView: View {
                             .lineLimit(1000)
                             .foregroundColor(.secondary)
                     }
-                }.toolbar{
-                    ToolbarItem(placement: .topBarLeading){
-                        Button(action:{
-                            dismiss()
-                        }){
-                            Image(systemName: "chevron.left.circle.fill")
+                }.overlay(HStack{
+                    Spacer()
+                    VStack{
+                        Button{ dismiss()
+                        } label: {
+                            Image(systemName: "chevron.down.circle.fill")
                                 .font(.largeTitle)
-                        }.tint(.white)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.top, 40)
+                        
+                        Spacer()
                     }
-                }
+                })
+                .ignoresSafeArea(.all, edges: .top)
             }.navigationBarTitleDisplayMode(.inline)
              .navigationBarBackButtonHidden(true)
-             .ignoresSafeArea(.all, edges: .top)
+             
                 
         }
     }
